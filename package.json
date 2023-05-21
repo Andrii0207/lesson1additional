@@ -1,0 +1,26 @@
+{
+  "name": "lesson1additional",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SergSmilya/lesson1additional.git"
+  },
+  "keywords": [],
+  "author": "Sergiy",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SergSmilya/lesson1additional/issues"
+  },
+  "homepage": "https://github.com/SergSmilya/lesson1additional#readme",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "joi": "^17.9.2",
+    "yargs": "^17.7.2"
+  }
+}
