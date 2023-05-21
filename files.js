@@ -42,11 +42,47 @@ async function createFile(fileName, content) {
   }
 }
 
-module.exports = { createFile };
+async function getFiles() {
+  try {
+    const result = await fs.readdir(path.join(__dirname, "./files"));
+    if (!result.length) {
+      console.log(chalk.red("No results in this directory"));
+      return;
+    }
+    console.log(chalk.green(result));
+  } catch (error) {
+    console.log(error);
+  }
+}
 
-// {node
-//   message: '"content" must be a string',
-//   path: [ 'content' ],
-//   type: 'string.base',
-//   context: { label: 'content', value: true, key: 'content' }
-// }
+async function getFile(fileName) {
+  try {
+    const result = await fs.readdir(path.join(__dirname, "./files"));
+    const findName = result.find((el) => el === fileName);
+    if (!findName) {
+      console.log(chalk.red(`Not file ${fileName} in this directory `));
+      return;
+    }
+
+    const resultFile = await fs.readFile(
+      path.join(__dirname, "./files", fileName),
+      "utf-8"
+    );
+
+    const extname = path.extname(path.join(__dirname, "./files", fileName));
+    const basename = path.basename(
+      path.join(__dirname, "./files", fileName),
+      extname
+    );
+    const resultObj = {
+      name: basename,
+      extention: extname,
+      content: resultFile,
+    };
+    console.log(resultObj);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+module.exports = { createFile, getFiles, getFile };
