@@ -1,10 +1,11 @@
 const fs = require("fs/promises");
 const path = require("path");
-const chalk = require("chalk");
 const dataValidator = require("./helpers/dataValidator");
 const checkExtention = require("./helpers/checkExtention");
 
-async function createFile(fileName, content) {
+async function createFile(req, res, next) {
+  const { fileName, content } = req.body
+
   const data = {
     fileName,
     content,
@@ -13,20 +14,14 @@ async function createFile(fileName, content) {
   const result = dataValidator(data);
 
   if (result.error) {
-    console.log(
-      chalk.red(`Please specifate ${result.error.details[0].path} parametr`)
-    );
+    res.status(400).json({ message: `Please specifate ${result.error.details[0].path} parametr` });
     return;
   }
 
-  const res = checkExtention(fileName);
+  const results = checkExtention(fileName);
 
-  if (!res.result) {
-    console.log(
-      chalk.red(
-        ` Sorry, this application doesn't support files with '${res.extention}' extention `
-      )
-    );
+  if (!results.result) {
+    res.status(400).json({ message: `Sorry, this application doesn't support files with '${results.extention}' extention` })
     return;
   }
 
@@ -36,31 +31,33 @@ async function createFile(fileName, content) {
       content,
       "utf-8"
     );
-    console.log(chalk.blue("File was successfully created"));
+    res.status(201).json({ message: "File was successfully created" })
   } catch (error) {
-    console.log(error);
+    res.status(500).json({ message: error.message })
   }
 }
 
-async function getFiles() {
+async function getFiles(req, res, next) {
   try {
     const result = await fs.readdir(path.join(__dirname, "./files"));
     if (!result.length) {
-      console.log(chalk.red("No results in this directory"));
+      res.status(404).json({ message: "No results in this directory" })
       return;
     }
-    console.log(chalk.green(result));
+    res.json(result)
   } catch (error) {
-    console.log(error);
+    res.status(500).json({ message: error.message })
   }
 }
 
-async function getFile(fileName) {
+async function getFile(req, res, next) {
+  const { fileName } = req.params
+
   try {
     const result = await fs.readdir(path.join(__dirname, "./files"));
     const findName = result.find((el) => el === fileName);
     if (!findName) {
-      console.log(chalk.red(`Not file ${fileName} in this directory `));
+      res.status(404).json({ message: `Not file ${fileName} in this directory ` })
       return;
     }
 
@@ -79,10 +76,11 @@ async function getFile(fileName) {
       extention: extname,
       content: resultFile,
     };
-    console.log(resultObj);
+    res.json(resultObj)
   } catch (error) {
-    console.log(error);
+    res.status(500).json({ message: error.message })
   }
 }
 
 module.exports = { createFile, getFiles, getFile };
+// module.exports = { createFile, getFiles, getFile };
